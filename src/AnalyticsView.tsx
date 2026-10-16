@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Trophy, Dumbbell, TrendingUp, Calendar, Trash2 } from 'lucide-react';
+import { Dumbbell, TrendingUp, Calendar, Trash2 } from 'lucide-react';
 
 interface SessionRecord {
   date: string;
@@ -11,24 +11,29 @@ interface SessionRecord {
 }
 
 export default function AnalyticsView() {
-  const [history, setHistory] = useState<SessionRecord[]>([]);
-
-  useEffect(() => {
-    const savedHistory = localStorage.getItem('iron_tracker_history');
-    if (savedHistory) {
-      setHistory(JSON.parse(savedHistory));
-    } else {
-      // Sample mock history data if none logged yet so the chart looks vibrant
-      const mockData: SessionRecord[] = [
-        { date: 'Oct 10', dayTitle: 'Push A', totalVolume: 4200, totalSets: 18, durationSeconds: 2700 },
-        { date: 'Oct 12', dayTitle: 'Pull A', totalVolume: 4650, totalSets: 18, durationSeconds: 2900 },
-        { date: 'Oct 14', dayTitle: 'Legs A', totalVolume: 5100, totalSets: 16, durationSeconds: 3100 },
-        { date: 'Oct 16', dayTitle: 'Push B', totalVolume: 4800, totalSets: 20, durationSeconds: 2850 }
-      ];
-      setHistory(mockData);
-      localStorage.setItem('iron_tracker_history', JSON.stringify(mockData));
+  const [history, setHistory] = useState<SessionRecord[]>(() => {
+    try {
+      const savedHistory = localStorage.getItem('iron_tracker_history');
+      if (savedHistory) {
+        return JSON.parse(savedHistory);
+      }
+    } catch (e) {
+      console.error('Failed to parse history:', e);
     }
-  }, []);
+    // Sample mock history data if none logged yet so the chart looks vibrant
+    const mockData: SessionRecord[] = [
+      { date: 'Oct 10', dayTitle: 'Push A', totalVolume: 4200, totalSets: 18, durationSeconds: 2700 },
+      { date: 'Oct 12', dayTitle: 'Pull A', totalVolume: 4650, totalSets: 18, durationSeconds: 2900 },
+      { date: 'Oct 14', dayTitle: 'Legs A', totalVolume: 5100, totalSets: 16, durationSeconds: 3100 },
+      { date: 'Oct 16', dayTitle: 'Push B', totalVolume: 4800, totalSets: 20, durationSeconds: 2850 }
+    ];
+    try {
+      localStorage.setItem('iron_tracker_history', JSON.stringify(mockData));
+    } catch (e) {
+      console.error('Failed to save initial mock history:', e);
+    }
+    return mockData;
+  });
 
   const clearHistory = () => {
     if (window.confirm("Clear all workout history?")) {
