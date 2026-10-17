@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import WorkoutTracker from './WorkoutTracker';
 import AnalyticsView from './AnalyticsView';
 import { Dumbbell, TrendingUp } from 'lucide-react';
